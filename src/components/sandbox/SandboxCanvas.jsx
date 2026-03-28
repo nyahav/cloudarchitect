@@ -2,9 +2,14 @@ import React, { useRef, useState, useCallback, useEffect } from "react";
 
 const NODE_W = 110;
 const NODE_H = 60;
+const SNAP_THRESHOLD = 60; // px distance to trigger snap
 
 function getCenter(node) {
   return { x: node.x + NODE_W / 2, y: node.y + NODE_H / 2 };
+}
+
+function dist(ax, ay, bx, by) {
+  return Math.sqrt((ax - bx) ** 2 + (ay - by) ** 2);
 }
 
 function ServiceIcon({ icon, color, size = 18 }) {
@@ -27,9 +32,9 @@ export default function SandboxCanvas({
   placeholders = [],
 }) {
   const svgRef = useRef(null);
-  // Use a ref for dragging so the global mouseup handler always sees current value
   const draggingRef = useRef(null);
   const [dragging, setDragging] = useState(null);
+  const [snapTarget, setSnapTarget] = useState(null); // placeholder index being snapped to
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [hoveredNode, setHoveredNode] = useState(null);
 
@@ -40,30 +45,64 @@ export default function SandboxCanvas({
     return { x: clientX - rect.left, y: clientY - rect.top };
   }, []);
 
-  // Global mouseup — fixes the "stuck dragging" bug when mouse is released outside SVG
+  // Find nearest unoccupied placeholder within snap threshold
+  const findSnapTarget = useCallback((nodeId, nx, ny) => {
+    let best = null;
+    let bestDist = SNAP_THRESHOLD;
+    placeholders.forEach((ph, i) => {
+      // Don't snap to a placeholder that already has a different node on it
+      const occupied = nodes.some(n => n.id !== nodeId && Math.abs(n.x - ph.x) < 10 && Math.abs(n.y - ph.y) < 10);
+      if (occupied) return;
+      const d = dist(nx, ny, ph.x, ph.y);
+      if (d < bestDist) { bestDist = d; best = i; }
+    });
+    return best;
+  }, [placeholders, nodes]);
+
+  // Global mouseup — fixes stuck-drag bug
   useEffect(() => {
     const handleGlobalMouseUp = () => {
       if (draggingRef.current) {
+        const d = draggingRef.current;
+        // Snap on release
+        setNodes(prev => {
+          const node = prev.find(n => n.id === d.id);
+          if (!node) return prev;
+          let snapIdx = null;
+          let bestDist = SNAP_THRESHOLD;
+          placeholders.forEach((ph, i) => {
+            const occupied = prev.some(n => n.id !== d.id && Math.abs(n.x - ph.x) < 10 && Math.abs(n.y - ph.y) < 10);
+            if (occupied) return;
+            const dd = dist(node.x, node.y, ph.x, ph.y);
+            if (dd < bestDist) { bestDist = dd; snapIdx = i; }
+          });
+          if (snapIdx !== null) {
+            return prev.map(n => n.id === d.id ? { ...n, x: placeholders[snapIdx].x, y: placeholders[snapIdx].y } : n);
+          }
+          return prev;
+        });
         draggingRef.current = null;
         setDragging(null);
+        setSnapTarget(null);
       }
     };
     window.addEventListener("mouseup", handleGlobalMouseUp);
     return () => window.removeEventListener("mouseup", handleGlobalMouseUp);
-  }, []);
+  }, [placeholders, setNodes]);
 
   const onMouseMove = useCallback((e) => {
     const pt = getSVGPoint(e.clientX, e.clientY);
     setMousePos(pt);
     if (draggingRef.current) {
       const d = draggingRef.current;
-      setNodes(prev => prev.map(n =>
-        n.id === d.id
-          ? { ...n, x: pt.x - d.offsetX, y: pt.y - d.offsetY }
-          : n
-      ));
+      const nx = pt.x - d.offsetX;
+      const ny = pt.y - d.offsetY;
+      setNodes(prev => prev.map(n => n.id === d.id ? { ...n, x: nx, y: ny } : n));
+      // Update snap highlight
+      const snapIdx = findSnapTarget(d.id, nx, ny);
+      setSnapTarget(snapIdx);
     }
-  }, [getSVGPoint, setNodes]);
+  }, [getSVGPoint, setNodes, findSnapTarget]);
 
   const onNodeMouseDown = useCallback((e, node) => {
     e.stopPropagation();
@@ -83,10 +122,9 @@ export default function SandboxCanvas({
 
   const onNodeMouseUp = useCallback((e, node) => {
     e.stopPropagation();
-    // Stop dragging
     draggingRef.current = null;
     setDragging(null);
-    // Complete edge drawing
+    setSnapTarget(null);
     if (drawingEdge && drawingEdge.fromId !== node.id) {
       const key = `${drawingEdge.fromId}->${node.id}`;
       const exists = edges.some(ed => ed.from === drawingEdge.fromId && ed.to === node.id);
@@ -101,6 +139,7 @@ export default function SandboxCanvas({
     if (drawingEdge) setDrawingEdge(null);
     draggingRef.current = null;
     setDragging(null);
+    setSnapTarget(null);
   }, [drawingEdge, setDrawingEdge]);
 
   const edgePath = (x1, y1, x2, y2) => {
@@ -128,22 +167,43 @@ export default function SandboxCanvas({
             <path d="M0,0 L0,6 L8,3 z" fill={n.color} />
           </marker>
         ))}
+        <filter id="snap-glow">
+          <feGaussianBlur stdDeviation="4" result="blur" />
+          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
       </defs>
 
       <rect width="100%" height="100%" fill="url(#grid)" />
 
-      {/* Placeholder slots — generic ghost outlines, no labels */}
-      {placeholders.map((ph, i) => (
-        <g key={`ph-${i}`} transform={`translate(${ph.x},${ph.y})`}>
-          <rect
-            x="0" y="0" width={NODE_W} height={NODE_H} rx="10"
-            fill="rgba(255,255,255,0.04)"
-            stroke="rgba(255,255,255,0.25)"
-            strokeWidth="1.5"
-            strokeDasharray="6 3"
-          />
-        </g>
-      ))}
+      {/* Placeholder slots */}
+      {placeholders.map((ph, i) => {
+        const isSnapping = snapTarget === i;
+        return (
+          <g key={`ph-${i}`} transform={`translate(${ph.x},${ph.y})`}>
+            {isSnapping && (
+              <rect
+                x="-6" y="-6" width={NODE_W + 12} height={NODE_H + 12} rx="14"
+                fill="rgba(14,165,233,0.08)"
+                stroke="rgba(14,165,233,0.5)"
+                strokeWidth="1.5"
+                filter="url(#snap-glow)"
+              />
+            )}
+            <rect
+              x="0" y="0" width={NODE_W} height={NODE_H} rx="10"
+              fill={isSnapping ? "rgba(14,165,233,0.06)" : "rgba(255,255,255,0.03)"}
+              stroke={isSnapping ? "rgba(14,165,233,0.7)" : "rgba(255,255,255,0.18)"}
+              strokeWidth={isSnapping ? 2 : 1.5}
+              strokeDasharray={isSnapping ? "none" : "6 3"}
+            />
+            {/* Subtle center dot */}
+            <circle
+              cx={NODE_W / 2} cy={NODE_H / 2} r="2"
+              fill={isSnapping ? "rgba(14,165,233,0.6)" : "rgba(255,255,255,0.12)"}
+            />
+          </g>
+        );
+      })}
 
       {/* Committed edges */}
       {edges.map(ed => {
@@ -185,6 +245,7 @@ export default function SandboxCanvas({
       {/* Nodes */}
       {nodes.map(node => {
         const isHovered = hoveredNode === node.id;
+        const isDraggingThis = dragging?.id === node.id;
         return (
           <g
             key={node.id}
@@ -193,9 +254,9 @@ export default function SandboxCanvas({
             onMouseUp={e => onNodeMouseUp(e, node)}
             onMouseEnter={() => setHoveredNode(node.id)}
             onMouseLeave={() => { if (!draggingRef.current) setHoveredNode(null); }}
-            style={{ cursor: drawingEdge ? "pointer" : dragging?.id === node.id ? "grabbing" : "grab" }}
+            style={{ cursor: drawingEdge ? "pointer" : isDraggingThis ? "grabbing" : "grab" }}
           >
-            {isHovered && (
+            {isHovered && !isDraggingThis && (
               <rect x="-4" y="-4" width={NODE_W + 8} height={NODE_H + 8} rx="14"
                 fill={node.color} fillOpacity="0.08" />
             )}
