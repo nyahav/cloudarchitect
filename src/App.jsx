@@ -9,6 +9,7 @@ import Projects from './pages/Projects';
 import ProjectLayout from './pages/ProjectLayout';
 import ProjectDashboard from './pages/ProjectDashboard';
 import ProjectGuide from './pages/ProjectGuide';
+import ProjectQuiz from './pages/ProjectQuiz';
 import AppShell from './components/AppShell';
 // Add page imports here
 
@@ -44,6 +45,7 @@ const AuthenticatedApp = () => {
           <Route index element={<ProjectDashboard />} />
           <Route path="map" element={<ProjectDashboard />} />
           <Route path="guide" element={<ProjectGuide />} />
+          <Route path="quiz" element={<ProjectQuiz />} />
         </Route>
         <Route path="*" element={<PageNotFound />} />
       </Routes>
