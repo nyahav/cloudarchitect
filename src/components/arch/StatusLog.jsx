@@ -34,12 +34,12 @@ export default function StatusLog({ logs }) {
             >
               <span className="text-muted-foreground shrink-0">{log.time}</span>
               <span style={{ color: log.color }}>{log.icon}</span>
-              <span className="text-foreground/80">{log.text}</span>
+              <span style={{ color: "rgba(210,220,240,0.9)" }}>{log.text}</span>
             </motion.div>
           ))}
         </AnimatePresence>
         {logs.length === 0 && (
-          <span className="text-muted-foreground">Waiting for events...</span>
+          <span style={{ color: "rgba(150,165,185,0.7)" }}>Waiting for events...</span>
         )}
       </div>
     </motion.div>

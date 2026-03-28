@@ -60,7 +60,7 @@ export default function ConnectionLines({ activeConnection }) {
               fill="none"
               stroke={color}
               strokeWidth={isActive ? 3 : 1.5}
-              strokeOpacity={isActive ? 0.4 : 0.1}
+              strokeOpacity={isActive ? 0.8 : 0.25}
               strokeDasharray={isActive ? "none" : "6 4"}
               markerEnd={`url(#arrow-${conn.from}-${conn.to})`}
             />
@@ -71,9 +71,9 @@ export default function ConnectionLines({ activeConnection }) {
                 d={path}
                 fill="none"
                 stroke={color}
-                strokeWidth={6}
-                strokeOpacity={0.15}
-                filter="blur(4px)"
+                strokeWidth={10}
+                strokeOpacity={0.25}
+                filter="url(#textGlow)"
               />
             )}
 
@@ -87,16 +87,17 @@ export default function ConnectionLines({ activeConnection }) {
 
               return (
                 <text
-                  x={mx + (isVertical ? 12 : 0)}
+                  x={mx + (isVertical ? 14 : 0)}
                   y={my + (isVertical ? 0 : -10)}
                   textAnchor="middle"
                   fill={color}
-                  fontSize={9}
-                  fontWeight={500}
+                  fontSize={10}
+                  fontWeight={600}
                   fontFamily="var(--font-inter)"
-                  opacity={isActive ? 1 : 0.5}
+                  opacity={isActive ? 1 : 0.75}
+                  filter={isActive ? "url(#textGlow)" : undefined}
                 >
-                  {conn.labelHe}
+                  {conn.label}
                 </text>
               );
             })()}

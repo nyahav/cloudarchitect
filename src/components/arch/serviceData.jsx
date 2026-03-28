@@ -4,29 +4,27 @@ export const SERVICES = {
   client: {
     id: "client",
     label: "Client",
-    labelHe: "לקוח (Client)",
     icon: "Monitor",
     color: "#94a3b8",
     glowColor: "rgba(148, 163, 184, 0.3)",
     x: 80,
     y: 250,
     why: {
-      title: "למה Client?",
-      text: "הלקוח הוא כל מי ששולח בקשה ל-API — זה יכול להיות אתר, אפליקציה, או פקודת curl בטרמינל. הוא שולח בקשת HTTP ומקבל תשובה עם מזהה Job."
+      title: "Why a Client?",
+      text: "The client is anyone sending a request to the API — a website, mobile app, or a curl command in the terminal. It sends an HTTP request and receives a response containing a Job ID."
     }
   },
   api: {
     id: "api",
-    label: "API Server",
-    labelHe: "API (EC2)",
+    label: "API Server (EC2)",
     icon: "Server",
     color: "#0ea5e9",
     glowColor: "rgba(14, 165, 233, 0.3)",
     x: 300,
     y: 250,
     why: {
-      title: "למה EC2 ל-API?",
-      text: "EC2 נותן לנו שרת וירטואלי עם שליטה מלאה. ה-API רץ כ-Docker Container על EC2 ומקבל בקשות HTTP בפורט 8080. הוא שומר את ה-Job ב-DynamoDB ושולח הודעה ל-SQS."
+      title: "Why EC2 for the API?",
+      text: "EC2 gives us a virtual server with full control over the OS. The API runs as a Docker Container on EC2, accepting HTTP requests on port 8080. It saves the Job to DynamoDB and publishes a message to SQS."
     },
     iamPolicy: {
       Version: "2012-10-17",
@@ -55,84 +53,79 @@ export const SERVICES = {
   dynamodb: {
     id: "dynamodb",
     label: "DynamoDB",
-    labelHe: "DynamoDB",
     icon: "Database",
     color: "#8b5cf6",
     glowColor: "rgba(139, 92, 246, 0.3)",
     x: 300,
     y: 80,
     why: {
-      title: "למה DynamoDB?",
-      text: "DynamoDB הוא מסד נתונים NoSQL מנוהל — אמזון מטפלת בכל התחזוקה. הוא מהיר (מילישניות), סקיילבילי, ובחינם עד 25 פעולות קריאה/כתיבה בשנייה. אנחנו שומרים פה את כל ה-Jobs עם הסטטוס שלהם."
+      title: "Why DynamoDB?",
+      text: "DynamoDB is a fully managed NoSQL database — AWS handles all maintenance, scaling, and backups. It offers millisecond latency and a generous free tier (25 read/write capacity units). We store all Jobs here with their current status."
     }
   },
   sqs: {
     id: "sqs",
     label: "SQS Queue",
-    labelHe: "SQS (תור הודעות)",
     icon: "Mail",
     color: "#f59e0b",
     glowColor: "rgba(245, 158, 11, 0.3)",
     x: 540,
     y: 250,
     why: {
-      title: "למה SQS?",
-      text: "SQS הוא תור הודעות — כמו תיבת דואר. ה-API שם הודעות (Jobs) בתור, וה-Worker שולף אותן. זה נקרא Decoupling — ה-API לא צריך לחכות שה-Worker יסיים. אם ה-Worker נפל, ההודעות ממתינות בתור."
+      title: "Why SQS?",
+      text: "SQS is a message queue — think of it as a post office box. The API drops messages in, and the Worker picks them up. This is called Decoupling: the API doesn't wait for the Worker to finish. If the Worker crashes, messages safely wait in the queue."
     }
   },
   worker: {
     id: "worker",
-    label: "Worker",
-    labelHe: "Worker (EC2)",
+    label: "Worker (EC2)",
     icon: "Cog",
     color: "#22c55e",
     glowColor: "rgba(34, 197, 94, 0.3)",
     x: 780,
     y: 250,
     why: {
-      title: "למה Worker נפרד?",
-      text: "ה-Worker רץ על EC2 נפרד (או אותו EC2 כ-Container נפרד). הוא שולף הודעות מ-SQS ומעבד אותן. ההפרדה מאפשרת סקיילינג — אפשר להוסיף Workers בלי לשנות את ה-API."
+      title: "Why a separate Worker?",
+      text: "The Worker runs as a separate Docker Container (on the same or different EC2). It polls SQS for messages and processes them. Keeping it separate enables independent scaling — add more Workers without touching the API."
     }
   },
   dlq: {
     id: "dlq",
     label: "Dead Letter Queue",
-    labelHe: "DLQ (תור שגיאות)",
     icon: "AlertTriangle",
     color: "#ef4444",
     glowColor: "rgba(239, 68, 68, 0.3)",
     x: 540,
     y: 430,
     why: {
-      title: "למה Dead Letter Queue?",
-      text: "DLQ מחזיק הודעות שנכשלו 3 פעמים (Redrive Policy). במקום לנסות אינסוף פעמים, ההודעה עוברת לתור שגיאות. זה מונע חסימה של התור הראשי ומאפשר חקירה של כשלונות."
+      title: "Why a Dead Letter Queue?",
+      text: "The DLQ holds messages that failed processing 3 times (Redrive Policy). Instead of retrying infinitely, failed messages are moved here for investigation. This keeps the main queue clean and prevents poison-pill messages from blocking other jobs."
     }
   },
   lambda: {
     id: "lambda",
-    label: "Lambda",
-    labelHe: "Lambda (Serverless)",
+    label: "Lambda (Serverless)",
     icon: "Zap",
     color: "#f97316",
     glowColor: "rgba(249, 115, 22, 0.3)",
     x: 780,
     y: 430,
     why: {
-      title: "למה Lambda?",
-      text: "Lambda היא פונקציה serverless — אין שרת לנהל! היא רצה רק כשמגיעה הודעה ל-DLQ. היא מעדכנת את הסטטוס ב-DynamoDB ל-FAILED. אתה משלם רק על זמן הריצה (מילישניות)."
+      title: "Why Lambda?",
+      text: "Lambda is serverless compute — no server to manage! It runs automatically when a message arrives in the DLQ. It updates DynamoDB to mark the job as FAILED. You pay only for execution time (milliseconds), making it perfect for rare error-handling tasks."
     }
   }
 };
 
 export const CONNECTIONS = [
-  { from: "client", to: "api", label: "HTTP Request", labelHe: "בקשת HTTP" },
-  { from: "api", to: "dynamodb", label: "Store Job", labelHe: "שמירת Job" },
-  { from: "api", to: "sqs", label: "Send Message", labelHe: "שליחת הודעה" },
-  { from: "sqs", to: "worker", label: "Receive Message", labelHe: "קבלת הודעה" },
-  { from: "worker", to: "dynamodb", label: "Update Status", labelHe: "עדכון סטטוס" },
-  { from: "sqs", to: "dlq", label: "After 3 Failures", labelHe: "אחרי 3 כשלונות" },
-  { from: "dlq", to: "lambda", label: "Trigger", labelHe: "הפעלה" },
-  { from: "lambda", to: "dynamodb", label: "Mark Failed", labelHe: "סימון כנכשל" },
+  { from: "client", to: "api", label: "HTTP Request" },
+  { from: "api", to: "dynamodb", label: "Store Job" },
+  { from: "api", to: "sqs", label: "Send Message" },
+  { from: "sqs", to: "worker", label: "Receive Message" },
+  { from: "worker", to: "dynamodb", label: "Update Status" },
+  { from: "sqs", to: "dlq", label: "After 3 Failures" },
+  { from: "dlq", to: "lambda", label: "Trigger" },
+  { from: "lambda", to: "dynamodb", label: "Mark Failed" },
 ];
 
 // SQS messages for the "Post Box" view

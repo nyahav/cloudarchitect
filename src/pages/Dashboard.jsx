@@ -238,7 +238,7 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8" dir="rtl">
+    <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <motion.div
@@ -250,7 +250,7 @@ export default function Dashboard() {
             <span className="text-primary">AWS</span> Architecture Explorer
           </h1>
           <p className="text-muted-foreground mt-2 text-sm md:text-base max-w-xl mx-auto">
-            מפה אינטראקטיבית של ארכיטקטורת ענן — לחץ על כל שירות ללמוד, שלח Job כדי לראות את הזרימה בפעולה
+            Interactive cloud architecture map — click any service to learn, send a Job to see the live data flow
           </p>
         </motion.div>
 

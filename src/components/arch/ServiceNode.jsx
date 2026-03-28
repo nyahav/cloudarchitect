@@ -41,10 +41,11 @@ export default function ServiceNode({ service, isActive, isSelected, onClick, on
         cx={service.x + 40}
         cy={service.y + 40}
         r={42}
-        fill={`${service.color}15`}
+        fill={`${service.color}20`}
         stroke={service.color}
-        strokeWidth={isSelected ? 2.5 : 1.5}
-        whileHover={{ r: 46, fill: `${service.color}25` }}
+        strokeWidth={isSelected ? 2.5 : 2}
+        strokeOpacity={isSelected ? 1 : 0.7}
+        whileHover={{ r: 46, fill: `${service.color}35` }}
         transition={{ type: "spring", stiffness: 300 }}
       />
 
@@ -63,17 +64,18 @@ export default function ServiceNode({ service, isActive, isSelected, onClick, on
         </div>
       </foreignObject>
 
-      {/* Label */}
+      {/* Label with text shadow for glow */}
       <text
         x={service.x + 40}
         y={service.y + 100}
         textAnchor="middle"
         fill={service.color}
         fontSize={12}
-        fontWeight={600}
+        fontWeight={700}
         fontFamily="var(--font-inter)"
+        filter="url(#textGlow)"
       >
-        {service.labelHe}
+        {service.label}
       </text>
 
       {/* "Why" button */}

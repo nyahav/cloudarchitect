@@ -9,7 +9,6 @@ export default function SQSPostBox({ messages, onClose }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
       className="absolute bottom-4 left-4 right-4 max-w-lg z-50"
-      dir="rtl"
     >
       <div
         className="rounded-xl border backdrop-blur-xl shadow-2xl overflow-hidden"
@@ -23,10 +22,10 @@ export default function SQSPostBox({ messages, onClose }) {
           <div className="flex items-center gap-2">
             <Mail size={16} style={{ color: "#f59e0b" }} />
             <span className="font-semibold text-sm" style={{ color: "#f59e0b" }}>
-              SQS Post Box — תור הודעות
+              SQS Post Box — Message Queue
             </span>
             <span className="px-2 py-0.5 rounded-full text-xs font-mono font-medium" style={{ background: "#f59e0b15", color: "#f59e0b" }}>
-              {messages.length} הודעות
+              {messages.length} messages
             </span>
           </div>
           <button onClick={onClose} className="p-1 rounded-md hover:bg-white/10 transition-colors">
@@ -40,7 +39,7 @@ export default function SQSPostBox({ messages, onClose }) {
             {messages.length === 0 ? (
               <div className="text-center py-6 text-muted-foreground text-sm">
                 <Package size={24} className="mx-auto mb-2 opacity-40" />
-                התור ריק — שלח Job כדי לראות הודעות
+                Queue is empty — send a Job to see messages
               </div>
             ) : (
               messages.map((msg, i) => (
@@ -65,15 +64,15 @@ export default function SQSPostBox({ messages, onClose }) {
                         <StatusBadge status={msg.status} />
                       </div>
                       <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                        <span>סוג: {msg.body.type}</span>
-                        <span>עדיפות: {msg.body.priority}</span>
+                        <span>Type: {msg.body.type}</span>
+                        <span>Priority: {msg.body.priority}</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
                       {msg.status === "processing" ? (
-                        <><EyeOff size={10} /> <span>נסתר</span></>
+                        <><EyeOff size={10} /> <span>Hidden</span></>
                       ) : (
-                        <><Eye size={10} /> <span>גלוי</span></>
+                        <><Eye size={10} /> <span>Visible</span></>
                       )}
                     </div>
                   </div>
@@ -101,7 +100,7 @@ export default function SQSPostBox({ messages, onClose }) {
 
                   {msg.receiveCount > 0 && (
                     <div className="mt-1.5 text-xs" style={{ color: msg.receiveCount >= 3 ? "#ef4444" : "#f59e0b" }}>
-                      ניסיונות עיבוד: {msg.receiveCount}/3
+                      Receive attempts: {msg.receiveCount}/3
                     </div>
                   )}
                 </motion.div>
@@ -113,8 +112,8 @@ export default function SQSPostBox({ messages, onClose }) {
         {/* Explanation */}
         <div className="px-5 py-3 border-t" style={{ borderColor: "#f59e0b10", background: "#f59e0b05" }}>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            💡 <strong className="text-foreground">Visibility Timeout:</strong> כשהודעה נקראת ע&quot;י Worker, היא נעלמת מהתור ל-300 שניות. 
-            אם ה-Worker לא מוחק אותה (כשל), היא חוזרת להיות גלויה לניסיון נוסף.
+            💡 <strong className="text-foreground">Visibility Timeout:</strong> When a Worker reads a message, it becomes invisible for 300 seconds.
+            If the Worker doesn't delete it (failure), it becomes visible again for another retry.
           </p>
         </div>
       </div>
@@ -124,10 +123,10 @@ export default function SQSPostBox({ messages, onClose }) {
 
 function StatusBadge({ status }) {
   const config = {
-    waiting: { label: "ממתינה", color: "#f59e0b" },
-    processing: { label: "בעיבוד", color: "#22c55e" },
-    completed: { label: "הושלמה", color: "#0ea5e9" },
-    failed: { label: "נכשלה", color: "#ef4444" },
+    waiting: { label: "Waiting", color: "#f59e0b" },
+    processing: { label: "Processing", color: "#22c55e" },
+    completed: { label: "Completed", color: "#0ea5e9" },
+    failed: { label: "Failed", color: "#ef4444" },
   };
   const c = config[status] || config.waiting;
 

@@ -10,7 +10,6 @@ export default function ControlPanel({ onSendJob, onForceFailure, onToggleSQS, o
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
       className="flex flex-wrap items-center justify-center gap-3 mt-6"
-      dir="rtl"
     >
       <Button
         onClick={onSendJob}
@@ -22,7 +21,7 @@ export default function ControlPanel({ onSendJob, onForceFailure, onToggleSQS, o
         }}
       >
         <Play size={14} />
-        שלח Job
+        Send Job
       </Button>
 
       <Button
@@ -55,7 +54,7 @@ export default function ControlPanel({ onSendJob, onForceFailure, onToggleSQS, o
         className="gap-2 text-sm text-muted-foreground hover:text-foreground"
       >
         <RotateCcw size={14} />
-        איפוס
+        Reset
       </Button>
     </motion.div>
   );

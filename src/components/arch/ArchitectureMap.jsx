@@ -32,6 +32,13 @@ export default function ArchitectureMap({
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
+          <filter id="textGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="2.5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
           <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#0ea5e9" stopOpacity="0.03" />
             <stop offset="100%" stopColor="transparent" stopOpacity="0" />

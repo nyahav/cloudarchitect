@@ -30,7 +30,6 @@ export default function IAMPolicyViewer({ serviceId, onClose }) {
         exit={{ opacity: 0, y: 20, scale: 0.95 }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
         className="absolute bottom-4 left-4 right-4 max-w-xl z-50"
-        dir="rtl"
       >
         <div className="rounded-xl border border-primary/20 backdrop-blur-xl shadow-2xl overflow-hidden"
           style={{ background: "hsl(222 47% 8% / 0.97)" }}
@@ -39,7 +38,7 @@ export default function IAMPolicyViewer({ serviceId, onClose }) {
           <div className="flex items-center justify-between px-5 py-3 border-b border-primary/10">
             <div className="flex items-center gap-2">
               <Shield size={16} className="text-primary" />
-              <span className="font-semibold text-sm text-primary">IAM Policy — {service.labelHe}</span>
+              <span className="font-semibold text-sm text-primary">IAM Policy — {service.label}</span>
               <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10">
                 <Lock size={10} className="text-primary" />
                 <span className="text-xs text-primary font-medium">Least Privilege</span>
@@ -62,8 +61,8 @@ export default function IAMPolicyViewer({ serviceId, onClose }) {
           {/* Explanation */}
           <div className="px-5 py-3 border-t border-primary/10 bg-primary/5">
             <p className="text-xs text-muted-foreground leading-relaxed">
-              💡 <strong className="text-foreground">Least Privilege:</strong> ה-Policy נותן רק את ההרשאות המינימליות שהשירות צריך. 
-              ה-API יכול לכתוב ל-DynamoDB ולשלוח ל-SQS, אבל לא יכול למחוק טבלאות או ליצור Queues חדשים.
+              💡 <strong className="text-foreground">Least Privilege:</strong> This policy grants only the minimum permissions the service needs.
+              The API can write to DynamoDB and send to SQS, but cannot delete tables or create new Queues.
             </p>
           </div>
         </div>

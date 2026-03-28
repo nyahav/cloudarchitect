@@ -15,13 +15,13 @@ export default function WhyPanel({ serviceId, onClose }) {
           exit={{ opacity: 0, x: 20, scale: 0.95 }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
           className="absolute top-4 left-4 w-80 z-50"
-          dir="rtl"
         >
           <div
             className="rounded-xl border backdrop-blur-xl p-5 shadow-2xl"
             style={{
-              background: `linear-gradient(135deg, hsl(222 47% 9% / 0.95), hsl(222 47% 12% / 0.95))`,
-              borderColor: `${service.color}30`,
+              background: `linear-gradient(135deg, hsl(222 47% 10% / 0.98), hsl(222 47% 14% / 0.98))`,
+              borderColor: `${service.color}50`,
+              boxShadow: `0 0 20px ${service.color}20`,
             }}
           >
             {/* Header */}
@@ -49,7 +49,7 @@ export default function WhyPanel({ serviceId, onClose }) {
             </div>
 
             {/* Content */}
-            <p className="text-sm leading-relaxed text-muted-foreground">
+            <p className="text-sm leading-relaxed" style={{ color: "rgba(210,220,240,0.85)" }}>
               {service.why.text}
             </p>
 
