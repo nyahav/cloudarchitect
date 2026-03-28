@@ -15,7 +15,7 @@ export default function ArchitectureMap({
   selectedNode,
 }) {
   return (
-    <div className="relative w-full overflow-hidden rounded-xl border border-border/30" style={{ background: "hsl(222 47% 5% / 0.6)" }}>
+    <div className="relative w-full overflow-hidden rounded-xl border" style={{ background: "#07111f", borderColor: "#00a8e820" }}>
       <svg
         viewBox="0 0 940 540"
         className="w-full h-auto"
@@ -23,8 +23,14 @@ export default function ArchitectureMap({
       >
         {/* Background grid */}
         <defs>
-          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="0.3" strokeOpacity="0.04" />
+          {/* Cyber grid: small cells + major lines every 5 */}
+          <pattern id="cyberGridSmall" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#00a8e8" strokeWidth="0.4" strokeOpacity="0.07" />
+          </pattern>
+          <pattern id="cyberGridMajor" width="100" height="100" patternUnits="userSpaceOnUse">
+            <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#00a8e8" strokeWidth="0.8" strokeOpacity="0.13" />
+            {/* Corner dots */}
+            <circle cx="0" cy="0" r="1.5" fill="#00a8e8" fillOpacity="0.25" />
           </pattern>
           <filter id="packetGlow">
             <feGaussianBlur stdDeviation="3" result="blur" />
@@ -40,19 +46,34 @@ export default function ArchitectureMap({
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
+          <filter id="labelBg" x="-10%" y="-20%" width="120%" height="140%">
+            <feFlood floodColor="#0a1628" floodOpacity="0.85" result="bg" />
+            <feMerge>
+              <feMergeNode in="bg" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
           <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#0ea5e9" stopOpacity="0.03" />
+            <stop offset="0%" stopColor="#00a8e8" stopOpacity="0.04" />
             <stop offset="100%" stopColor="transparent" stopOpacity="0" />
           </radialGradient>
         </defs>
 
+        {/* Dark base */}
+        <rect width="940" height="540" fill="#07111f" />
+        <rect width="940" height="540" fill="url(#cyberGridSmall)" />
+        <rect width="940" height="540" fill="url(#cyberGridMajor)" />
         <rect width="940" height="540" fill="url(#bgGlow)" />
-        <rect width="940" height="540" fill="url(#grid)" />
 
         {/* Region label */}
-        <rect x="20" y="15" width="900" height="510" rx="12" fill="none" stroke="white" strokeWidth="0.5" strokeOpacity="0.06" strokeDasharray="8 4" />
-        <text x="470" y="38" textAnchor="middle" fill="white" fillOpacity="0.15" fontSize="11" fontFamily="var(--font-mono)">
-          AWS Region: us-east-1 (N. Virginia)
+        <rect x="20" y="15" width="900" height="510" rx="12" fill="none" stroke="#00a8e8" strokeWidth="0.6" strokeOpacity="0.12" strokeDasharray="8 4" />
+        {/* AWS logo + region label */}
+        <g transform="translate(36, 24)">
+          {/* AWS orange smile logo simplified */}
+          <text fontSize="10" fontWeight="700" fontFamily="var(--font-mono)" fill="#FF9900" fillOpacity="0.7">AWS</text>
+        </g>
+        <text x="470" y="38" textAnchor="middle" fill="#00a8e8" fillOpacity="0.25" fontSize="10" fontFamily="var(--font-mono)">
+          us-east-1 · N. Virginia
         </text>
 
         {/* Connection lines */}

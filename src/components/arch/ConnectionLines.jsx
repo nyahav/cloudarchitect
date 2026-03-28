@@ -86,20 +86,48 @@ export default function ConnectionLines({ activeConnection, services = {}, conne
               const my = (start.y + end.y) / 2;
               const isVertical = Math.abs(end.y - start.y) > Math.abs(end.x - start.x);
 
+              // Per-connection label offset overrides to avoid node overlaps
+              const labelKey = `${conn.from}-${conn.to}`;
+              const offsets = {
+                "dlq-lambda":    { dx: 0,   dy: -14 },
+                "lambda-dynamodb": { dx: 28,  dy: 0   },
+                "sqs-dlq":       { dx: -26,  dy: 0   },
+                "worker-dynamodb": { dx: 0,  dy: -14 },
+                "api-dynamodb":  { dx: -26,  dy: 0   },
+              };
+              const off = offsets[labelKey] || {};
+              const dx = off.dx ?? (isVertical ? 18 : 0);
+              const dy = off.dy ?? (isVertical ? 0 : -12);
+
+              const lx = mx + dx;
+              const ly = my + dy;
+
               return (
-                <text
-                  x={mx + (isVertical ? 14 : 0)}
-                  y={my + (isVertical ? 0 : -10)}
-                  textAnchor="middle"
-                  fill={color}
-                  fontSize={10}
-                  fontWeight={600}
-                  fontFamily="var(--font-inter)"
-                  opacity={isActive ? 1 : 0.75}
-                  filter={isActive ? "url(#textGlow)" : undefined}
-                >
-                  {conn.label}
-                </text>
+                <g key={`label-${i}`}>
+                  {/* Dark pill background */}
+                  <rect
+                    x={lx - 28}
+                    y={ly - 10}
+                    width={56}
+                    height={13}
+                    rx={3}
+                    fill="#07111f"
+                    fillOpacity={0.85}
+                  />
+                  <text
+                    x={lx}
+                    y={ly}
+                    textAnchor="middle"
+                    fill={color}
+                    fontSize={9.5}
+                    fontWeight={600}
+                    fontFamily="var(--font-inter)"
+                    opacity={isActive ? 1 : 0.8}
+                    filter={isActive ? "url(#textGlow)" : undefined}
+                  >
+                    {conn.label}
+                  </text>
+                </g>
               );
             })()}
           </g>
