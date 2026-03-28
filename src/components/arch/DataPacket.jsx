@@ -4,6 +4,7 @@ import { SERVICES } from "./serviceData";
 
 function getNodeCenter(serviceId) {
   const s = SERVICES[serviceId];
+  if (!s) return { x: 0, y: 0 };
   return { x: s.x + 40, y: s.y + 40 };
 }
 

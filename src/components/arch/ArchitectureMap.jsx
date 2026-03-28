@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from "react";
-import { SERVICES } from "./serviceData";
 import ServiceNode from "./ServiceNode";
 import ConnectionLines from "./ConnectionLines";
 import DataPacket from "./DataPacket";
 
 export default function ArchitectureMap({
+  services = {},
+  connections = [],
   activeNodes,
   activeConnection,
   packets,
@@ -55,10 +56,10 @@ export default function ArchitectureMap({
         </text>
 
         {/* Connection lines */}
-        <ConnectionLines activeConnection={activeConnection} />
+        <ConnectionLines activeConnection={activeConnection} services={services} connections={connections} />
 
         {/* Service nodes */}
-        {Object.values(SERVICES).map((service) => (
+        {Object.values(services).map((service) => (
           <ServiceNode
             key={service.id}
             service={service}

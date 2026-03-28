@@ -1,10 +1,8 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Shield, Lock } from "lucide-react";
-import { SERVICES } from "./serviceData";
-
-export default function IAMPolicyViewer({ serviceId, onClose }) {
-  const service = serviceId ? SERVICES[serviceId] : null;
+export default function IAMPolicyViewer({ serviceId, services = {}, onClose }) {
+  const service = serviceId ? services[serviceId] : null;
   const policy = service?.iamPolicy;
 
   if (!policy) return null;

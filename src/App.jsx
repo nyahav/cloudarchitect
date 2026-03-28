@@ -5,8 +5,10 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
-import Dashboard from './pages/Dashboard';
-import Guide from './pages/Guide';
+import Projects from './pages/Projects';
+import ProjectLayout from './pages/ProjectLayout';
+import ProjectDashboard from './pages/ProjectDashboard';
+import ProjectGuide from './pages/ProjectGuide';
 import AppShell from './components/AppShell';
 // Add page imports here
 
@@ -37,8 +39,12 @@ const AuthenticatedApp = () => {
   return (
     <AppShell>
       <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/guide" element={<Guide />} />
+        <Route path="/" element={<Projects />} />
+        <Route path="/project/:projectId" element={<ProjectLayout />}>
+          <Route index element={<ProjectDashboard />} />
+          <Route path="map" element={<ProjectDashboard />} />
+          <Route path="guide" element={<ProjectGuide />} />
+        </Route>
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </AppShell>

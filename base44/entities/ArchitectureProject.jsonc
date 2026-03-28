@@ -1,0 +1,46 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "color": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "string"
+    },
+    "services": {
+      "type": "object"
+    },
+    "connections": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "guide_steps": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "required": [
+    "name",
+    "description",
+    "services",
+    "connections",
+    "guide_steps"
+  ],
+  "name": "ArchitectureProject"
+}

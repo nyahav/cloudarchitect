@@ -1,14 +1,14 @@
 import React from "react";
-import { SERVICES, CONNECTIONS } from "./serviceData";
 
-function getNodeCenter(serviceId) {
-  const s = SERVICES[serviceId];
+function getNodeCenter(serviceId, services) {
+  const s = services[serviceId];
+  if (!s) return { x: 0, y: 0 };
   return { x: s.x + 40, y: s.y + 40 };
 }
 
-function getPath(from, to) {
-  const start = getNodeCenter(from);
-  const end = getNodeCenter(to);
+function getPath(from, to, services) {
+  const start = getNodeCenter(from, services);
+  const end = getNodeCenter(to, services);
 
   const dx = end.x - start.x;
   const dy = end.y - start.y;
@@ -23,13 +23,14 @@ function getPath(from, to) {
   return `M ${start.x} ${start.y} Q ${midX + offset} ${midY - offset} ${end.x} ${end.y}`;
 }
 
-export default function ConnectionLines({ activeConnection }) {
+export default function ConnectionLines({ activeConnection, services = {}, connections = [] }) {
   return (
     <g>
       {/* Define arrow markers */}
       <defs>
-        {CONNECTIONS.map((conn, i) => {
-          const s = SERVICES[conn.to];
+        {connections.map((conn, i) => {
+          const s = services[conn.to];
+          if (!s) return null;
           return (
             <marker
               key={`arrow-${i}`}
@@ -47,10 +48,10 @@ export default function ConnectionLines({ activeConnection }) {
         })}
       </defs>
 
-      {CONNECTIONS.map((conn, i) => {
+      {connections.map((conn, i) => {
         const isActive = activeConnection === `${conn.from}-${conn.to}`;
-        const path = getPath(conn.from, conn.to);
-        const color = SERVICES[conn.to].color;
+        const path = getPath(conn.from, conn.to, services);
+        const color = services[conn.to]?.color || "#0ea5e9";
 
         return (
           <g key={i}>
@@ -79,8 +80,8 @@ export default function ConnectionLines({ activeConnection }) {
 
             {/* Label */}
             {(() => {
-              const start = getNodeCenter(conn.from);
-              const end = getNodeCenter(conn.to);
+              const start = getNodeCenter(conn.from, services);
+              const end = getNodeCenter(conn.to, services);
               const mx = (start.x + end.x) / 2;
               const my = (start.y + end.y) / 2;
               const isVertical = Math.abs(end.y - start.y) > Math.abs(end.x - start.x);

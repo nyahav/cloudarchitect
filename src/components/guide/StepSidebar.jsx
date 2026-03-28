@@ -1,14 +1,13 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Network, Database, Mail, Package, Shield, Server, Zap, TestTube, CheckCircle } from "lucide-react";
-import { GUIDE_STEPS } from "./guideData";
 
 const iconMap = { Network, Database, Mail, Package, Shield, Server, Zap, TestTube };
 
-export default function StepSidebar({ activeStep, completedSteps, onSelect }) {
+export default function StepSidebar({ steps = [], activeStep, completedSteps, onSelect }) {
   return (
     <div className="flex flex-col gap-1 py-2">
-      {GUIDE_STEPS.map((step, i) => {
+      {steps.map((step, i) => {
         const Icon = iconMap[step.icon] || Server;
         const isActive = activeStep === step.id;
         const isDone = completedSteps.includes(step.id);

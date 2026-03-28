@@ -1,10 +1,8 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Lightbulb } from "lucide-react";
-import { SERVICES } from "./serviceData";
-
-export default function WhyPanel({ serviceId, onClose }) {
-  const service = serviceId ? SERVICES[serviceId] : null;
+export default function WhyPanel({ serviceId, services = {}, onClose }) {
+  const service = serviceId ? services[serviceId] : null;
 
   return (
     <AnimatePresence>
