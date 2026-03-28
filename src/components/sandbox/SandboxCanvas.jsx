@@ -132,34 +132,18 @@ export default function SandboxCanvas({
 
       <rect width="100%" height="100%" fill="url(#grid)" />
 
-      {/* Placeholder slots */}
-      {placeholders.map(ph => {
-        const isPlaced = nodes.some(n => n.id === ph.id);
-        if (isPlaced) return null;
-        return (
-          <g key={`ph-${ph.id}`} transform={`translate(${ph.x},${ph.y})`} opacity="0.35">
-            <rect
-              x="0" y="0" width={NODE_W} height={NODE_H} rx="10"
-              fill="transparent"
-              stroke={ph.color}
-              strokeWidth="1.5"
-              strokeDasharray="6 3"
-              strokeOpacity="0.5"
-            />
-            <text
-              x={NODE_W / 2} y={NODE_H / 2 + 4}
-              textAnchor="middle"
-              fill={ph.color}
-              fontSize="9"
-              fontFamily="var(--font-inter)"
-              fontWeight="600"
-              fillOpacity="0.6"
-            >
-              {ph.label.length > 14 ? ph.label.slice(0, 13) + "…" : ph.label}
-            </text>
-          </g>
-        );
-      })}
+      {/* Placeholder slots — generic ghost outlines, no labels */}
+      {placeholders.map((ph, i) => (
+        <g key={`ph-${i}`} transform={`translate(${ph.x},${ph.y})`}>
+          <rect
+            x="0" y="0" width={NODE_W} height={NODE_H} rx="10"
+            fill="rgba(255,255,255,0.04)"
+            stroke="rgba(255,255,255,0.25)"
+            strokeWidth="1.5"
+            strokeDasharray="6 3"
+          />
+        </g>
+      ))}
 
       {/* Committed edges */}
       {edges.map(ed => {
