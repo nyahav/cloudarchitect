@@ -1,0 +1,45 @@
+{
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "ID of the ArchitectureProject this question belongs to"
+    },
+    "question": {
+      "type": "string"
+    },
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "4 answer choices"
+    },
+    "correct": {
+      "type": "number",
+      "description": "Index (0-3) of the correct option"
+    },
+    "explanation": {
+      "type": "string",
+      "description": "Why the correct answer is right"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "service_roles",
+        "iam_policy",
+        "best_practices"
+      ],
+      "description": "Topic category for the question"
+    }
+  },
+  "required": [
+    "project_id",
+    "question",
+    "options",
+    "correct",
+    "explanation",
+    "category"
+  ],
+  "name": "QuizQuestion"
+}
