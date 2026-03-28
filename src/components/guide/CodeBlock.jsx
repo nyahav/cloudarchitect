@@ -13,6 +13,7 @@ export default function CodeBlock({ code, label }) {
 
   // Syntax highlight bash
   const highlight = (text) => {
+    if (!text) return "";
     return text
       .replace(/^(#.*)$/gm, '<span style="color:#6b7280;font-style:italic">$1</span>')
       .replace(/\b(aws|docker|curl|cat|chmod|echo|mkdir|cd|zip)\b/g, '<span style="color:#f97316;font-weight:600">$1</span>')
