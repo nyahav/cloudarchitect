@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Trash2, RotateCcw } from "lucide-react";
 import SandboxCanvas from "@/components/sandbox/SandboxCanvas";
@@ -7,6 +7,14 @@ import ValidationPanel from "@/components/sandbox/ValidationPanel";
 
 const NODE_W = 110;
 const NODE_H = 60;
+
+// Canvas viewport the project was designed for (from serviceData.js / project.services coords)
+const DESIGN_W = 940;
+const DESIGN_H = 540;
+// Our actual canvas area (minus palette 176px and panel 224px, height minus topbar ~56px)
+const CANVAS_W = 700;
+const CANVAS_H = 480;
+const PADDING = 60;
 
 export default function ProjectSandbox() {
   const { project } = useOutletContext();
@@ -18,6 +26,29 @@ export default function ProjectSandbox() {
     icon: s.icon,
     color: s.color,
   }));
+
+  // Build placeholder positions by scaling the project's original service coordinates
+  const placeholders = useMemo(() => {
+    const svcList = Object.values(project.services || {});
+    if (svcList.length === 0) return [];
+    // Find bounds of original design coords
+    const xs = svcList.map(s => s.x ?? 0);
+    const ys = svcList.map(s => s.y ?? 0);
+    const minX = Math.min(...xs), maxX = Math.max(...xs);
+    const minY = Math.min(...ys), maxY = Math.max(...ys);
+    const rangeX = (maxX - minX) || 1;
+    const rangeY = (maxY - minY) || 1;
+    const usableW = CANVAS_W - PADDING * 2 - NODE_W;
+    const usableH = CANVAS_H - PADDING * 2 - NODE_H;
+    return svcList.map(s => ({
+      id: s.id,
+      label: s.label,
+      icon: s.icon,
+      color: s.color,
+      x: PADDING + ((( s.x ?? 0) - minX) / rangeX) * usableW,
+      y: PADDING + (((s.y ?? 0) - minY) / rangeY) * usableH,
+    }));
+  }, [project.services]);
 
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
@@ -142,6 +173,7 @@ export default function ProjectSandbox() {
           setDrawingEdge={setDrawingEdge}
           onEdgeClick={setSelectedEdge}
           selectedEdge={selectedEdge}
+          placeholders={placeholders}
         />
       </div>
 
