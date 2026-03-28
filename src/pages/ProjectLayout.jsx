@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link, useLocation, Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { Network, BookOpen, Brain, ChevronLeft, Loader2 } from "lucide-react";
+import { Network, BookOpen, Brain, ChevronLeft, Loader2, FlaskConical } from "lucide-react";
 
 export default function ProjectLayout() {
   const { projectId } = useParams();
@@ -78,10 +78,11 @@ export default function ProjectLayout() {
             { path: `/project/${projectId}/map`, label: "Architecture Map", icon: Network },
             { path: `/project/${projectId}/guide`, label: "Guide", icon: BookOpen },
             { path: `/project/${projectId}/quiz`, label: "Quiz", icon: Brain },
+            { path: `/project/${projectId}/sandbox`, label: "Sandbox", icon: FlaskConical },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = location.pathname === tab.path ||
-              (tab.path.endsWith("/map") && !location.pathname.endsWith("/guide") && !location.pathname.endsWith("/quiz"));
+              (tab.path.endsWith("/map") && !location.pathname.endsWith("/guide") && !location.pathname.endsWith("/quiz") && !location.pathname.endsWith("/sandbox"));
             return (
               <Link
                 key={tab.path}
